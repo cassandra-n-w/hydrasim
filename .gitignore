@@ -4,7 +4,7 @@
 
 # exclude all input files except for the molecule ones
 *.inp
-dust_temperature.data
+dust_temperature.dat
 !molecule*.inp
 !dustkappa_silicate.inp
 
