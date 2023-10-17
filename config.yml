@@ -1,0 +1,23 @@
+# run: conda env create --file config.yml
+name: casa_radmc
+dependencies:
+- python=3.10
+- numpy>=1.23
+- anaconda
+- scipy
+- astropy
+- matplotlib
+- pip
+- pip:
+  - casatools==6.6.0.20
+  - casatasks==6.6.0.20
+  - casaplotms
+  - casaviewer
+  - casashell==6.6.0.20
+  - casadata
+  - casaplotserver
+  - almatasks
+  - casatestutils==6.6.0.20
+  - casatablebrowser
+  - casalogger
+  - casafeather
