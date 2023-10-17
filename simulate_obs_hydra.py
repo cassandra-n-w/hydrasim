@@ -1,3 +1,12 @@
+# This file is part of Hydrasim, a small piece of software intended to 
+# simulate observations of TW Hydra.
+
+# Hydrasim is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+# Hydrasim is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with Hydrasim. If not, see <https://www.gnu.org/licenses/>. 
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -119,12 +128,12 @@ apply_noise = True
 if (apply_noise):
     sm = casatools.simulator()
     sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
-    sm.setseed(seed=int(11213))
+    sm.setseed(seed=int(11215))
     sm.setnoise(
         mode = 'tsys-manual',
         trx = float(10000),
         tau = float(0.0), 
-        rxtype = int(1))  #rxtype 1 is 2SB, 2 is DSB
+        rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
     sm.corrupt()
     
     sm.done()
@@ -150,12 +159,12 @@ apply_noise = True
 if (apply_noise):
         sm = casatools.simulator()
         sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
-        sm.setseed(seed=int(11214))
+        sm.setseed(seed=int(11216))
         sm.setnoise(
             mode = 'tsys-manual',
             trx = float(10000),
             tau = float(0.0), 
-            rxtype = int(1))  #rxtype 1 is 2SB, 2 is DSB
+            rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
         sm.corrupt()
         
         sm.done()
@@ -177,7 +186,7 @@ casatasks.simanalyze(
     #modelimage = file,
     vis = "$project." + cfg + ".ms",# + "," + project_name + "." + cfg + ".ms",
     imsize = [600, 600],
-    niter = 0000,
+    niter = 10000,
     threshold = "1e-7Jy",
     weighting = "natural",
     analyze = True,
