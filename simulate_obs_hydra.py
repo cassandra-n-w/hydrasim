@@ -25,7 +25,7 @@ twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
 file = "oh2o1600.fits"
 
-project_name = "oh2o_sim_hires10"
+project_name = "oh2o_sim_hires13"
 
 vp = casatools.vpmanager()
 
@@ -119,7 +119,7 @@ casatasks.simobserve(
     #incell = "0.005arcsec",
     #mapsize            =  "0.76arcsec",
     obsmode            =  "int",
-    totaltime          =  "3.6s",
+    totaltime          =  "14h",
     antennalist        =  cfg + ".cfg",
     thermalnoise       =  '')
 
@@ -131,7 +131,7 @@ if (apply_noise):
     sm.setseed(seed=int(11215))
     sm.setnoise(
         mode = 'tsys-manual',
-        trx = float(10000),
+        trx = float(275),
         tau = float(0.0), 
         rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
     sm.corrupt()
@@ -150,7 +150,7 @@ casatasks.simobserve(
         #incell = "0.005arcsec",
         #mapsize            =  "0.76arcsec",
         obsmode            =  "int",
-        totaltime          =  "3.6s",
+        totaltime          =  "14h",
         antennalist        =  cfg + ".cfg",
         thermalnoise       =  '')
 
@@ -162,7 +162,7 @@ if (apply_noise):
         sm.setseed(seed=int(11216))
         sm.setnoise(
             mode = 'tsys-manual',
-            trx = float(10000),
+            trx = float(275),
             tau = float(0.0), 
             rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
         sm.corrupt()
@@ -170,19 +170,19 @@ if (apply_noise):
         sm.done()
 #%%
 
-# casatasks.tclean(
-#         vis = project_name + "/" +project_name + "." + cfg + ".ms", #project_name + "/" +project_name + "." + cfg + ".ms"],
-#         imagename= project_name + "/" +project_name + "." + cfg,
-#         imsize = 600,
-#         cell="0.005arcsec",
-#         niter = 10000,
-#         threshold = "1e-7Jy",
-#         weighting = "natural"
-#         )
+casatasks.tclean(
+        vis = [project_name + "/" +project_name + "." + "scifi" + ".ms", project_name + "/" +project_name + "." + cfg + ".ms"],
+        imagename= project_name + "/" +project_name + "." + cfg,
+        imsize = 600,
+        cell="0.005arcsec",
+        niter = 0000,
+        threshold = "1e-7Jy",
+        weighting = "natural"
+        )
 
 casatasks.simanalyze(
     project = project_name,
-    image = True,
+    image = False,
     #modelimage = file,
     vis = "$project." + cfg + ".ms",# + "," + project_name + "." + cfg + ".ms",
     imsize = [600, 600],
