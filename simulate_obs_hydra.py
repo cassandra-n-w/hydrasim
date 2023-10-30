@@ -25,7 +25,7 @@ twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
 file = "oh2o1600.fits"
 
-project_name = "oh2o_sim_hires13"
+project_name = "oh2o_sim_hires14"
 
 vp = casatools.vpmanager()
 
@@ -140,18 +140,20 @@ scivp = vp.getvp("SCIFI",freq=500e9)
     
 #%%
 
-numnights = 4
+numnights = 20
 night_vises = []
 vis_prefix = project_name + "/" +project_name + "."
 
 for night in range(0, numnights):
+    print(night)
     
     
-    cfg="scifi" + night;
+    cfg_temp="scifi" + str(night);
     
-    os.link(outconfig, cfg+".cfg")
+    if not os.path.exists(cfg_temp+".cfg"):
+        os.link(outconfig, cfg_temp+".cfg")
     
-    night_vises.append(vis_prefix + cfg + ".ms")
+    night_vises.append(vis_prefix + cfg_temp + ".ms")
     
     casatasks.simobserve(
             project = project_name,
@@ -163,14 +165,14 @@ for night in range(0, numnights):
             #mapsize            =  "0.76arcsec",
             obsmode            =  "int",
             totaltime          =  "14h",
-            antennalist        =  cfg + ".cfg",
+            antennalist        =  cfg_temp + ".cfg",
             thermalnoise       =  '')
     
     
     apply_noise = True
     if (apply_noise):
             sm = casatools.simulator()
-            sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
+            sm.openfromms(project_name + "/" + project_name + "." + cfg_temp + ".ms")
             sm.setseed(seed=int(10000 + night))
             sm.setnoise(
                 mode = 'tsys-manual',
@@ -183,12 +185,12 @@ for night in range(0, numnights):
     #%%
 
 casatasks.tclean(
-        vis = [project_name + "/" +project_name + "." + "scifi" + ".ms", project_name + "/" +project_name + "." + cfg + ".ms"],
+        vis = night_vises,
         imagename= project_name + "/" +project_name + "." + cfg,
         imsize = 600,
         cell="0.005arcsec",
-        niter = 0000,
-        threshold = "1e-7Jy",
+        niter = 60000,
+        threshold = "1e-4Jy",
         weighting = "natural"
         )
 
