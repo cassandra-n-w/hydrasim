@@ -12,6 +12,7 @@ dust_temperature.dat
 *.log
 *.fits
 *.out
+*.cfg
 
 
 
