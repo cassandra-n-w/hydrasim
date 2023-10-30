@@ -110,65 +110,77 @@ scivp = vp.getvp("SCIFI",freq=500e9)
 
 #%%
 
-casatasks.simobserve(
-    project = project_name,
-    skymodel = file,
-    setpointings       =  True,
-    direction          =  twhya_coord,
-    indirection        =  twhya_coord,
-    #incell = "0.005arcsec",
-    #mapsize            =  "0.76arcsec",
-    obsmode            =  "int",
-    totaltime          =  "14h",
-    antennalist        =  cfg + ".cfg",
-    thermalnoise       =  '')
+# casatasks.simobserve(
+#     project = project_name,
+#     skymodel = file,
+#     setpointings       =  True,
+#     direction          =  twhya_coord,
+#     indirection        =  twhya_coord,
+#     #incell = "0.005arcsec",
+#     #mapsize            =  "0.76arcsec",
+#     obsmode            =  "int",
+#     totaltime          =  "14h",
+#     antennalist        =  cfg + ".cfg",
+#     thermalnoise       =  '')
 
 
-apply_noise = True
-if (apply_noise):
-    sm = casatools.simulator()
-    sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
-    sm.setseed(seed=int(11215))
-    sm.setnoise(
-        mode = 'tsys-manual',
-        trx = float(275),
-        tau = float(0.0), 
-        rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
-    sm.corrupt()
+# apply_noise = True
+# if (apply_noise):
+#     sm = casatools.simulator()
+#     sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
+#     sm.setseed(seed=int(11215))
+#     sm.setnoise(
+#         mode = 'tsys-manual',
+#         trx = float(275),
+#         tau = float(0.0), 
+#         rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
+#     sm.corrupt()
     
-    sm.done()
+#     sm.done()
     
 #%%
-cfg="scifi2"
 
-casatasks.simobserve(
-        project = project_name,
-        skymodel = file,
-        setpointings       =  True,
-        direction          =  twhya_coord,
-        indirection        =  twhya_coord,
-        #incell = "0.005arcsec",
-        #mapsize            =  "0.76arcsec",
-        obsmode            =  "int",
-        totaltime          =  "14h",
-        antennalist        =  cfg + ".cfg",
-        thermalnoise       =  '')
+numnights = 4
+night_vises = []
+vis_prefix = project_name + "/" +project_name + "."
 
-
-apply_noise = True
-if (apply_noise):
-        sm = casatools.simulator()
-        sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
-        sm.setseed(seed=int(11216))
-        sm.setnoise(
-            mode = 'tsys-manual',
-            trx = float(275),
-            tau = float(0.0), 
-            rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
-        sm.corrupt()
-        
-        sm.done()
-#%%
+for night in range(0, numnights):
+    
+    
+    cfg="scifi" + night;
+    
+    os.link(outconfig, cfg+".cfg")
+    
+    night_vises.append(vis_prefix + cfg + ".ms")
+    
+    casatasks.simobserve(
+            project = project_name,
+            skymodel = file,
+            setpointings       =  True,
+            direction          =  twhya_coord,
+            indirection        =  twhya_coord,
+            #incell = "0.005arcsec",
+            #mapsize            =  "0.76arcsec",
+            obsmode            =  "int",
+            totaltime          =  "14h",
+            antennalist        =  cfg + ".cfg",
+            thermalnoise       =  '')
+    
+    
+    apply_noise = True
+    if (apply_noise):
+            sm = casatools.simulator()
+            sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
+            sm.setseed(seed=int(10000 + night))
+            sm.setnoise(
+                mode = 'tsys-manual',
+                trx = float(275),
+                tau = float(0.0), 
+                rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
+            sm.corrupt()
+            
+            sm.done()
+    #%%
 
 casatasks.tclean(
         vis = [project_name + "/" +project_name + "." + "scifi" + ".ms", project_name + "/" +project_name + "." + cfg + ".ms"],
