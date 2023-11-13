@@ -18,6 +18,7 @@ Created on Mon Jun 12 10:15:25 2023
 import casatasks
 import casatools
 import os
+import numpy as np
 #import simalma
 #import numpy as np
 
@@ -106,6 +107,30 @@ vp.setpbairy("SCIFI", dishdiam = "2m",blockagediam = "0m")
 
 scivp = vp.getvp("SCIFI",freq=500e9)
 
+#%% do some integration time estimation
+
+kb = 1.381e-23 # boltzmann content
+
+Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
+
+noiselev = 1e-2 #janskies per beam
+bw = 3.71e6 # bandwidth in Hz
+Tsys = 100 # system temperature in kelvin
+efficiency = 0.8 * 0.9 * 0.85 # efficiencies multiplied together
+n_ant = 10 # number of antennas
+
+A = np.pi * (diamout/2)**2 # area of antenna in m^2
+
+SEFD = Tsys*(2*kb/(efficiency*A)) # SEFD in SI units
+
+SEFD_Jy = SEFD/Jy_convert # convert to Jy/beam
+
+tint = (SEFD_Jy/noiselev)**2 / (n_ant*(n_ant-1)*bw) # integration time required in seconds
+
+tint_h = tint / 3600 # integration time in hours
+
+tint_runs = tint_h/14 # number of runs required
+
 
 
 #%%
@@ -140,7 +165,7 @@ scivp = vp.getvp("SCIFI",freq=500e9)
     
 #%%
 
-numnights = 20
+numnights = 25
 night_vises = []
 vis_prefix = project_name + "/" +project_name + "."
 
@@ -176,20 +201,32 @@ for night in range(0, numnights):
             sm.setseed(seed=int(10000 + night))
             sm.setnoise(
                 mode = 'tsys-manual',
-                trx = float(275),
+                trx = float(Tsys),
                 tau = float(0.0), 
                 rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
             sm.corrupt()
             
             sm.done()
     #%%
+    
 
+night_vises = []
+for night in range(0, numnights):
+    cfg_temp="scifi" + str(night);
+    night_vises.append(vis_prefix + cfg_temp + ".ms")
+    
+modelimage = vis_prefix + cfg + "0.skymodel.flat" 
+  
+#%%  
+# note: to run tclean from scratch, delete scifi.model
+# otherwise, tclean will simply apply more clean iterations to existing model
 casatasks.tclean(
         vis = night_vises,
         imagename= project_name + "/" +project_name + "." + cfg,
+        startmodel=modelimage,
         imsize = 600,
         cell="0.005arcsec",
-        niter = 60000,
+        niter = 10000,
         threshold = "1e-4Jy",
         weighting = "natural"
         )
