@@ -26,7 +26,7 @@ twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
 file = "oh2o1600.fits"
 
-project_name = "oh2o_sim_hires15"
+project_name = "oh2o_sim_hires20"
 
 vp = casatools.vpmanager()
 
@@ -114,6 +114,7 @@ kb = 1.381e-23 # boltzmann content
 Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
 
 noiselev = 1e-2 #janskies per beam
+
 bw = 3.71e6 # bandwidth in Hz
 Tsys = 100 # system temperature in kelvin
 efficiency = 0.8 * 0.9 * 0.85 # efficiencies multiplied together
@@ -165,15 +166,15 @@ tint_runs = tint_h/14 # number of runs required
     
 #%%
 
-numnights = 25
+numnights = 1
 night_vises = []
 vis_prefix = project_name + "/" +project_name + "."
 
-for night in range(0, numnights):
+for night in range(0, 1):
     print(night)
     
     
-    cfg_temp="scifi" + str(night);
+    cfg_temp= cfg
     
     if not os.path.exists(cfg_temp+".cfg"):
         os.link(outconfig, cfg_temp+".cfg")
@@ -190,18 +191,23 @@ for night in range(0, numnights):
             #mapsize            =  "0.76arcsec",
             obsmode            =  "int",
             totaltime          =  "14h",
-            antennalist        =  cfg_temp + ".cfg",
+            antennalist        =  cfg + ".cfg",
             thermalnoise       =  '')
     
     
     apply_noise = True
     if (apply_noise):
             sm = casatools.simulator()
-            sm.openfromms(project_name + "/" + project_name + "." + cfg_temp + ".ms")
+            sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
             sm.setseed(seed=int(10000 + night))
             sm.setnoise(
                 mode = 'tsys-manual',
-                trx = float(Tsys),
+                # here we reduce the receiver temperature by a factor equal to the 
+                # sqrt of the number of observing passes conducted to emulate the noise
+                # reduction from performing that many observing passes
+                
+                # this is a bit hacky but seems like the easiest way to do it.
+                trx = float(Tsys)/np.sqrt(float(numnights)),
                 tau = float(0.0), 
                 rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
             sm.corrupt()
@@ -222,24 +228,24 @@ modelimage = vis_prefix + cfg + "0.skymodel.flat"
 #%%  
 # note: to run tclean from scratch, delete scifi.model
 # otherwise, tclean will simply apply more clean iterations to existing model
-casatasks.tclean(
-        vis = night_vises,
-        imagename= project_name + "/" +project_name + "." + cfg,
-        startmodel=modelimage,
-        imsize = 600,
-        cell="0.005arcsec",
-        niter = 0,
-        threshold = "1e-4Jy",
-        weighting = "natural"
-        )
+# casatasks.tclean(
+#         vis = project_name + "/" +project_name + "." + cfg + ".ms",
+#         imagename= project_name + "/" +project_name + "." + cfg,
+#         #startmodel=modelimage,
+#         imsize = [600,600],
+#         cell="0.005arcsec",
+#         niter = 0,
+#         threshold = "1e-4Jy",
+#         weighting = "natural"
+#         )
 
 casatasks.simanalyze(
     project = project_name,
-    image = False,
+    image = True,
     #modelimage = file,
     vis = "$project." + cfg + ".ms",# + "," + project_name + "." + cfg + ".ms",
     imsize = [600, 600],
-    niter = 10000,
+    niter = 000,
     threshold = "1e-7Jy",
     weighting = "natural",
     analyze = True,
