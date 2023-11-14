@@ -26,7 +26,7 @@ twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
 file = "oh2o1600.fits"
 
-project_name = "oh2o_sim_hires14"
+project_name = "oh2o_sim_hires15"
 
 vp = casatools.vpmanager()
 
@@ -211,6 +211,8 @@ for night in range(0, numnights):
     
 
 night_vises = []
+vis_prefix = project_name + "/" +project_name + "."
+
 for night in range(0, numnights):
     cfg_temp="scifi" + str(night);
     night_vises.append(vis_prefix + cfg_temp + ".ms")
@@ -226,7 +228,7 @@ casatasks.tclean(
         startmodel=modelimage,
         imsize = 600,
         cell="0.005arcsec",
-        niter = 10000,
+        niter = 0,
         threshold = "1e-4Jy",
         weighting = "natural"
         )
