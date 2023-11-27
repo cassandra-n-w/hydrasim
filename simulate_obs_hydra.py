@@ -26,7 +26,7 @@ twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
 file = "oh2o1600.fits"
 
-project_name = "oh2o_sim_hires20"
+project_name = "oh2o_sim_hires24"
 
 vp = casatools.vpmanager()
 
@@ -64,7 +64,7 @@ basecfg = "scifi_proto.cfg"
 
 dir = '/home/cassie/casa/casa-6.5.2-26-py3.8/data/alma/simmos/'
 
-xyscale = 10
+xyscale = 20
 xoffset = xyscale * 2000/50
 yoffset = xyscale * 28000/50
 zout = 0
@@ -113,7 +113,7 @@ kb = 1.381e-23 # boltzmann content
 
 Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
 
-noiselev = 1e-2 #janskies per beam
+noiselev = 1e-3 #janskies per beam
 
 bw = 3.71e6 # bandwidth in Hz
 Tsys = 100 # system temperature in kelvin
@@ -166,7 +166,7 @@ tint_runs = tint_h/14 # number of runs required
     
 #%%
 
-numnights = 1
+numnights = 1200
 night_vises = []
 vis_prefix = project_name + "/" +project_name + "."
 
@@ -208,6 +208,9 @@ for night in range(0, 1):
                 
                 # this is a bit hacky but seems like the easiest way to do it.
                 trx = float(Tsys)/np.sqrt(float(numnights)),
+                tcmb= float(2.73)/np.sqrt(float(numnights)),
+                tground=float(2.73)/np.sqrt(float(numnights)),
+                tatmos=float(12),
                 tau = float(0.0), 
                 rxtype = int(2))  #rxtype 1 is 2SB, 2 is DSB
             sm.corrupt()
@@ -245,7 +248,7 @@ casatasks.simanalyze(
     #modelimage = file,
     vis = "$project." + cfg + ".ms",# + "," + project_name + "." + cfg + ".ms",
     imsize = [600, 600],
-    niter = 000,
+    niter = 10000,
     threshold = "1e-7Jy",
     weighting = "natural",
     analyze = True,
