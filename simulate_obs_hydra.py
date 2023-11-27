@@ -26,7 +26,7 @@ twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
 file = "oh2o1600.fits"
 
-project_name = "oh2o_sim_hires24"
+project_name = "oh2o_sim_hires25"
 
 vp = casatools.vpmanager()
 
@@ -64,7 +64,7 @@ basecfg = "scifi_proto.cfg"
 
 dir = '/home/cassie/casa/casa-6.5.2-26-py3.8/data/alma/simmos/'
 
-xyscale = 20
+xyscale = 10
 xoffset = xyscale * 2000/50
 yoffset = xyscale * 28000/50
 zout = 0
@@ -166,10 +166,12 @@ tint_runs = tint_h/14 # number of runs required
     
 #%%
 
-numnights = 1200
+numnights = 300
 night_vises = []
 vis_prefix = project_name + "/" +project_name + "."
 
+
+#%%
 for night in range(0, 1):
     print(night)
     
@@ -226,7 +228,7 @@ for night in range(0, numnights):
     cfg_temp="scifi" + str(night);
     night_vises.append(vis_prefix + cfg_temp + ".ms")
     
-modelimage = vis_prefix + cfg + "0.skymodel.flat" 
+modelimage = vis_prefix + cfg + ".skymodel.flat" 
   
 #%%  
 # note: to run tclean from scratch, delete scifi.model
@@ -242,13 +244,23 @@ modelimage = vis_prefix + cfg + "0.skymodel.flat"
 #         weighting = "natural"
 #         )
 
+cleanprior = "cleanprior"
+
+ia = casatools.image()
+ia.open(modelimage) 
+
+im2 = ia.rebin(outfile = cleanprior, bin=[160,160],overwrite=True)
+im2.done()
+ia.close()
+#%%
+
 casatasks.simanalyze(
     project = project_name,
     image = True,
-    #modelimage = file,
+    #modelimage=cleanprior,
     vis = "$project." + cfg + ".ms",# + "," + project_name + "." + cfg + ".ms",
     imsize = [600, 600],
-    niter = 10000,
+    niter = 20000,
     threshold = "1e-7Jy",
     weighting = "natural",
     analyze = True,
