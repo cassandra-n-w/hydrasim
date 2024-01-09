@@ -19,6 +19,7 @@ import casatasks
 import casatools
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 #import simalma
 #import numpy as np
 
@@ -26,7 +27,7 @@ twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
 file = "oh2o1600.fits"
 
-project_name = "oh2o_sim_hires25"
+project_name = "oh2o_sim_hires27"
 
 vp = casatools.vpmanager()
 
@@ -64,11 +65,11 @@ basecfg = "scifi_proto.cfg"
 
 dir = '/home/cassie/casa/casa-6.5.2-26-py3.8/data/alma/simmos/'
 
-xyscale = 10
+xyscale = 12
 xoffset = xyscale * 2000/50
 yoffset = xyscale * 28000/50
 zout = 0
-diamout = 2
+diamout = 4
 
 outconfig = "scifi.cfg"
 cfg = "scifi"
@@ -116,7 +117,7 @@ Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
 noiselev = 1e-3 #janskies per beam
 
 bw = 3.71e6 # bandwidth in Hz
-Tsys = 100 # system temperature in kelvin
+Tsys = 25 # system temperature in kelvin
 efficiency = 0.8 * 0.9 * 0.85 # efficiencies multiplied together
 n_ant = 10 # number of antennas
 
@@ -131,6 +132,8 @@ tint = (SEFD_Jy/noiselev)**2 / (n_ant*(n_ant-1)*bw) # integration time required 
 tint_h = tint / 3600 # integration time in hours
 
 tint_runs = tint_h/14 # number of runs required
+
+print(str(tint_h))
 
 
 
@@ -166,7 +169,7 @@ tint_runs = tint_h/14 # number of runs required
     
 #%%
 
-numnights = 300
+numnights = tint_runs
 night_vises = []
 vis_prefix = project_name + "/" +project_name + "."
 
@@ -221,12 +224,12 @@ for night in range(0, 1):
     #%%
     
 
-night_vises = []
-vis_prefix = project_name + "/" +project_name + "."
+# night_vises = []
+# vis_prefix = project_name + "/" +project_name + "."
 
-for night in range(0, numnights):
-    cfg_temp="scifi" + str(night);
-    night_vises.append(vis_prefix + cfg_temp + ".ms")
+# for night in range(0, numnights):
+#     cfg_temp="scifi" + str(night);
+#     night_vises.append(vis_prefix + cfg_temp + ".ms")
     
 modelimage = vis_prefix + cfg + ".skymodel.flat" 
   
@@ -254,12 +257,14 @@ im2.done()
 ia.close()
 #%%
 
+imsize_pixels = 1000
+
 casatasks.simanalyze(
     project = project_name,
     image = True,
     #modelimage=cleanprior,
     vis = "$project." + cfg + ".ms",# + "," + project_name + "." + cfg + ".ms",
-    imsize = [600, 600],
+    imsize = imsize_pixels,
     niter = 20000,
     threshold = "1e-7Jy",
     weighting = "natural",
@@ -271,6 +276,47 @@ casatasks.simanalyze(
     graphics = "both",
     verbose = True,
     overwrite = True)
+
+#%% 
+spacing = 10
+means = []
+radii = np.arange (0.01,imsize_pixels/2, spacing)
+
+for i in radii:
+    region = "annulus[[" + str(imsize_pixels/2) + "pix, " + str(imsize_pixels/2) + "pix], [" + str(i) + "pix, " + str(i + spacing) + "pix]]"
+    
+    print(region)
+    
+    statout = casatasks.imstat(
+        imagename= project_name + "/" + project_name + ".scifi.image.flat", 
+        region=region,
+        )
+    
+    means.append(statout['mean'][0])
+    
+headout = casatasks.imhead(
+    imagename= project_name + "/" + project_name + ".scifi.image.flat")
+
+radtodeg = 180/np.pi
+degtoarcsec = 3600
+
+pixsize = abs(headout['incr'][0]) * radtodeg * degtoarcsec
+
+plt.plot(radii*pixsize, means)
+plt.title("Radially Averaged Intensity")
+plt.xlabel("Distance from disk center (arcsec)")
+plt.ylabel("Average Intensity (Jy/beam)")
+plt.xlim(0,max(radii*pixsize))
+plt.ylim(-0.01, 0.03)
+plt.show()
+    
+
+#%%
+
+print(str(Tsys) + "K")
+print(str(diamout) + "m") 
+print(str(tint_h/24) + " days")
+print(str())
 
 # #%%
 # casatasks.simalma(
