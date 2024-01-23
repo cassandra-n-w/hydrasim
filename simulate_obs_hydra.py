@@ -114,7 +114,7 @@ kb = 1.381e-23 # boltzmann content
 
 Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
 
-noiselev = 1e-3 #janskies per beam
+noiselev = 5e-3 #janskies per beam
 
 bw = 3.71e6 # bandwidth in Hz
 Tsys = 25 # system temperature in kelvin
@@ -204,7 +204,7 @@ for night in range(0, 1):
     if (apply_noise):
             sm = casatools.simulator()
             sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
-            sm.setseed(seed=int(10000 + night))
+            sm.setseed(seed=int(10001 + night))
             sm.setnoise(
                 mode = 'tsys-manual',
                 # here we reduce the receiver temperature by a factor equal to the 
@@ -277,7 +277,11 @@ casatasks.simanalyze(
     verbose = True,
     overwrite = True)
 
-#%% 
+plt.show()
+
+#%% do plotting of radially averaged observation
+beamsize = 2.4e-1 # beamsize in arcseconds, obtained by averaging the major and minor axes
+
 spacing = 10
 means = []
 radii = np.arange (0.01,imsize_pixels/2, spacing)
@@ -301,13 +305,25 @@ radtodeg = 180/np.pi
 degtoarcsec = 3600
 
 pixsize = abs(headout['incr'][0]) * radtodeg * degtoarcsec
+radii_arcsec = radii*pixsize
+radii_beams = radii_arcsec/beamsize
 
-plt.plot(radii*pixsize, means)
+beams_per_circumf = np.clip(radii_beams * 2 * np.pi, 1, np.inf)
+
+
+means_noiseless = np.load("noiseless.npy")
+
+# calculate the estimated error bars based on noiselevel/(number of beams per circumference)
+errors = noiselev / np.sqrt(beams_per_circumf)
+
+plt.errorbar(radii_arcsec, means, yerr=errors)
+plt.plot(radii_arcsec, means_noiseless)
 plt.title("Radially Averaged Intensity")
 plt.xlabel("Distance from disk center (arcsec)")
 plt.ylabel("Average Intensity (Jy/beam)")
 plt.xlim(0,max(radii*pixsize))
 plt.ylim(-0.01, 0.03)
+plt.legend(["Noiseless",str(1000*noiselev) + "mJy/beam"])
 plt.show()
     
 
