@@ -305,11 +305,20 @@ for seedmod in np.arange(3, 25):
      
 #%% plot all
 
-for seedmod in np.arange(0,25):
+numseeds = 15
+
+means = np.load("means0.npy")
+multimean = np.zeros((len(means), numseeds))
+
+for seedmod in np.arange(0,numseeds):
     
     means = np.load("means" + str(seedmod) + ".npy")
-    
+    multimean[:,seedmod] = means
     plt.errorbar(radii_arcsec, means, yerr=errors)
+    
+mean_stddev = np.std(multimean, axis=1)
+
+#plt.plot(radii_arcsec, mean_stddev)
  
 plt.plot(radii_arcsec, means_noiseless)    
 plt.title("Radially Averaged Intensity, Noise = " + str(noiselev*1000) + "mJy/beam")
@@ -317,6 +326,13 @@ plt.xlabel("Distance from disk center (arcsec)")
 plt.ylabel("Average Intensity (Jy/beam)")
 plt.xlim(0,max(radii*pixsize))
 plt.ylim(-0.01, 0.03)
+plt.show()
+
+
+plt.plot(radii_arcsec, mean_stddev/errors)
+plt.title("Ratio of Monte Carlo Noise to Statistically Estimated Noise")
+plt.xlabel("Distance from disk center (arcsec)")
+plt.ylabel("Noise Ratio (monte carlo estimate / statistical estimate)")
 plt.show()
 
     
