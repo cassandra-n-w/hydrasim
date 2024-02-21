@@ -72,7 +72,7 @@ xyscale = 12
 xoffset = xyscale * 2000/50
 yoffset = xyscale * 28000/50
 zout = 0
-diamout = 4
+diamout = 2
 
 outconfig = "scifi.cfg"
 cfg = "scifi"
@@ -114,16 +114,16 @@ scivp = vp.getvp("SCIFI",freq=500e9)
 #%% do some integration time estimation
 
 
-for seedmod in np.arange(3, 25):
+for seedmod in np.arange(11, 15):
 
     kb = 1.381e-23 # boltzmann content
     
     Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
     
-    noiselev = 3e-3 #janskies per beam
+    noiselev = 5e-3 #janskies per beam
     
     bw = 3.71e6 # bandwidth in Hz
-    Tsys = 25 # system temperature in kelvin
+    Tsys = 100 # system temperature in kelvin
     efficiency = 0.8 * 0.9 * 0.85 # efficiencies multiplied together
     n_ant = 10 # number of antennas
     
@@ -285,6 +285,7 @@ for seedmod in np.arange(3, 25):
     
     beams_per_circumf = np.clip(radii_beams * 2 * np.pi, 1, np.inf)
     
+    print("writing npy files")
     
     means_noiseless = np.load("noiseless.npy")
     
@@ -314,9 +315,33 @@ for seedmod in np.arange(0,numseeds):
     
     means = np.load("means" + str(seedmod) + ".npy")
     multimean[:,seedmod] = means
-    plt.errorbar(radii_arcsec, means, yerr=errors)
+    
     
 mean_stddev = np.std(multimean, axis=1)
+mean_avg = np.mean(multimean, axis=1)
+
+for seedmod in np.arange(0,numseeds):
+    plt.errorbar(radii_arcsec, means, yerr=mean_stddev)
+
+range_min = range(8,20)
+range_max = range(15, 30)
+range_of_interest = range(11,25)
+
+signal_noiseless = np.max(means_noiseless[range_max]) - np.min(means_noiseless[range_min ])
+signal_noisy = np.max(mean_avg[range_max ]) - np.min(mean_avg[range_min ])
+
+average_noise = np.mean(mean_stddev[range_of_interest])
+
+
+print("noiseless signal " + str(signal_noiseless*1000) + "mJy/beam")
+print("noisy average signal " + str(signal_noisy*1000) + "mJy/beam")
+
+print("noise in region of interest " + str(average_noise*1000) + "mJy/beam")
+print("SNR " + str(10*np.log10(signal_noisy/average_noise)) + "dB")
+print("SNR " + str(signal_noisy/average_noise) + " (linear)")
+
+
+
 
 #plt.plot(radii_arcsec, mean_stddev)
  

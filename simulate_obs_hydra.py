@@ -69,7 +69,7 @@ xyscale = 12
 xoffset = xyscale * 2000/50
 yoffset = xyscale * 28000/50
 zout = 0
-diamout = 4
+diamout = 3
 
 outconfig = "scifi.cfg"
 cfg = "scifi"
@@ -114,7 +114,7 @@ kb = 1.381e-23 # boltzmann content
 
 Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
 
-noiselev = 3e-3 #janskies per beam
+noiselev = 5e-3 #janskies per beam
 
 bw = 3.71e6 # bandwidth in Hz
 Tsys = 25 # system temperature in kelvin
@@ -134,6 +134,12 @@ tint_h = tint / 3600 # integration time in hours
 tint_runs = tint_h/14 # number of runs required
 
 print(str(tint_h))
+
+print(str(Tsys) + "K")
+print(str(diamout) + "m") 
+print(str(tint_h/24) + " days")
+print(str())
+
 
 
 
