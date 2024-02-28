@@ -108,7 +108,7 @@ makeImage(npix = pixel_count,
 out_bandwidth = (freq/1e6) * out_widthkms/(c/1e9) / (out_nlam)
 im = readImage()  
 #plotImage(im,log=True,maxlog=6,au=True,bunit='inu',cmap=cm.hot,ifreq=0)
-im.writeFits(fname=molecule_name+str(pixel_count)+".fits", 
+im.writeFits(fname=molecule_name+str(pixel_count)+"_nowater.fits", 
              dpc = twhya_dist_pc, 
              coord = twhya_coord, 
              bandwidthmhz= out_bandwidth,

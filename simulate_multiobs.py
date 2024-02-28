@@ -30,7 +30,7 @@ twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
 file = "oh2o1600.fits"
 
-project_name = "oh2o_sim_hires27"
+project_name = "oh2o_sim_hires29"
 
 vp = casatools.vpmanager()
 
@@ -114,13 +114,13 @@ scivp = vp.getvp("SCIFI",freq=500e9)
 #%% do some integration time estimation
 
 
-for seedmod in np.arange(11, 15):
+for seedmod in np.arange(14, 15):
 
     kb = 1.381e-23 # boltzmann content
     
     Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
     
-    noiselev = 5e-3 #janskies per beam
+    noiselev = 3e-3 #janskies per beam
     
     bw = 3.71e6 # bandwidth in Hz
     Tsys = 100 # system temperature in kelvin
@@ -306,6 +306,8 @@ for seedmod in np.arange(11, 15):
      
 #%% plot all
 
+plt.plot(radii_arcsec, means_noiseless, '--')   
+
 numseeds = 15
 
 means = np.load("means0.npy")
@@ -321,6 +323,7 @@ mean_stddev = np.std(multimean, axis=1)
 mean_avg = np.mean(multimean, axis=1)
 
 for seedmod in np.arange(0,numseeds):
+    means = np.load("means" + str(seedmod) + ".npy")
     plt.errorbar(radii_arcsec, means, yerr=mean_stddev)
 
 range_min = range(8,20)
@@ -345,12 +348,13 @@ print("SNR " + str(signal_noisy/average_noise) + " (linear)")
 
 #plt.plot(radii_arcsec, mean_stddev)
  
-plt.plot(radii_arcsec, means_noiseless)    
-plt.title("Radially Averaged Intensity, Noise = " + str(noiselev*1000) + "mJy/beam")
+ 
+plt.title("Azimuthally Averaged Intensity, Noise = " + str(noiselev*1000) + "mJy/beam")
 plt.xlabel("Distance from disk center (arcsec)")
 plt.ylabel("Average Intensity (Jy/beam)")
 plt.xlim(0,max(radii*pixsize))
 plt.ylim(-0.01, 0.03)
+plt.legend(["Noiseless", "Noisy"])
 plt.show()
 
 

@@ -25,9 +25,9 @@ import matplotlib.pyplot as plt
 
 twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
-file = "oh2o1600.fits"
+file = "oh2o1600_nowater.fits"
 
-project_name = "oh2o_sim_hires27"
+project_name = "oh2o_sim_hires30"
 
 vp = casatools.vpmanager()
 
@@ -206,7 +206,7 @@ for night in range(0, 1):
             thermalnoise       =  '')
     
     
-    apply_noise = True
+    apply_noise = False
     if (apply_noise):
             sm = casatools.simulator()
             sm.openfromms(project_name + "/" + project_name + "." + cfg + ".ms")
@@ -322,9 +322,9 @@ means_noiseless = np.load("noiseless.npy")
 # calculate the estimated error bars based on noiselevel/(number of beams per circumference)
 errors = noiselev / np.sqrt(beams_per_circumf)
 
-plt.errorbar(radii_arcsec, means, yerr=errors)
+#plt.errorbar(radii_arcsec, means, yerr=errors)
 plt.plot(radii_arcsec, means_noiseless)
-plt.title("Radially Averaged Intensity")
+plt.title("Azimuthally Averaged Intensity")
 plt.xlabel("Distance from disk center (arcsec)")
 plt.ylabel("Average Intensity (Jy/beam)")
 plt.xlim(0,max(radii*pixsize))
