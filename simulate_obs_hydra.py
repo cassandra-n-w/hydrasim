@@ -323,13 +323,15 @@ means_noiseless = np.load("noiseless.npy")
 errors = noiselev / np.sqrt(beams_per_circumf)
 
 #plt.errorbar(radii_arcsec, means, yerr=errors)
+plt.plot(radii_arcsec, means)
 plt.plot(radii_arcsec, means_noiseless)
 plt.title("Azimuthally Averaged Intensity")
 plt.xlabel("Distance from disk center (arcsec)")
 plt.ylabel("Average Intensity (Jy/beam)")
 plt.xlim(0,max(radii*pixsize))
 plt.ylim(-0.01, 0.03)
-plt.legend(["Noiseless",str(1000*noiselev) + "mJy/beam"])
+#plt.legend(["Noiseless",str(1000*noiselev) + "mJy/beam"])
+plt.legend(["Noiseless without water","Noiseless with water"])
 plt.show()
     
 

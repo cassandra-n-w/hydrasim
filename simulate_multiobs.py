@@ -28,9 +28,9 @@ import matplotlib.pyplot as plt
 
 twhya_coord = 'J2000 11h01m51.9054s -34d42m17.0316s'
 
-file = "oh2o1600.fits"
+file = "oh2o1600_nowater.fits"
 
-project_name = "oh2o_sim_hires29"
+project_name = "oh2o_sim_hires31"
 
 vp = casatools.vpmanager()
 
@@ -114,13 +114,13 @@ scivp = vp.getvp("SCIFI",freq=500e9)
 #%% do some integration time estimation
 
 
-for seedmod in np.arange(14, 15):
+for seedmod in np.arange(0, 15):
 
     kb = 1.381e-23 # boltzmann content
     
     Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
     
-    noiselev = 3e-3 #janskies per beam
+    noiselev = 6e-3 #janskies per beam
     
     bw = 3.71e6 # bandwidth in Hz
     Tsys = 100 # system temperature in kelvin
@@ -289,7 +289,7 @@ for seedmod in np.arange(14, 15):
     
     means_noiseless = np.load("noiseless.npy")
     
-    np.save("means" + str(seedmod), means)
+    np.save("means" + str(seedmod) + file + ".npy", means)
     
     # calculate the estimated error bars based on noiselevel/(number of beams per circumference)
     errors = noiselev / np.sqrt(beams_per_circumf)

@@ -112,8 +112,9 @@ im.writeFits(fname=molecule_name+str(pixel_count)+"_nowater.fits",
              dpc = twhya_dist_pc, 
              coord = twhya_coord, 
              bandwidthmhz= out_bandwidth,
-             casa=False,
-             ifreq=0)
+             casa=False
+             #ifreq=0
+             )
 #plotImage(im,log=True,maxlog=6,au=True,bunit='inu',cmap=cm.hot,ifreq=1, arcsec = True, dpc = twhya_dist_pc)
 #%% Plot optical density
 
