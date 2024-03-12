@@ -120,7 +120,7 @@ for seedmod in np.arange(0, 15):
     
     Jy_convert = 1e-26 # conversion from W/m/m/Hz to Jy
     
-    noiselev = 5e-3 #janskies per beam
+    noiselev = 2e-3 #janskies per beam
     
     bw = 3.71e6 # bandwidth in Hz
     Tsys = 100 # system temperature in kelvin
