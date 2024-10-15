@@ -1,0 +1,7 @@
+iter_0001.dat --- output from Du et al. 2015 twhya model
+
+It has physical properties and molecular/ion abundances inside each cell. As you can see in the header of the file, it has many columns. The most important coordinates are rmin, rmax, zmin, and zmax. These are the radial and vertical boundaries of each cell. Tgas and Tdust are gas temperature and averaged dust temperature. The model has two dust populations (small, amax = 1um, and large, amax = 1mm). The molecular columns are abundances relative to n_gas. Water gas abundance is named as H2O, and water ice is gH2O.
+
+This model started with an initial elemental abundance of a typical molecular cloud (see Du & Bergin, 2014, ApJ, 792,2).
+
+The easiest way to load the data is to use the load_data_as_dic.py. 
