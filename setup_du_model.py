@@ -331,7 +331,7 @@ rho_co2 = resample3(dic, rho_CO_unsampled2, xc, yc, 60)
 
 # multiply by 0.5, assuming 50:50 ortho/para water ratio
 # TESTING: DENSITY IS MULTIPLIED BY ZERO TO TEST MODEL WITHOUT WATER PRESENT
-rho_oh2o = 0 * 0.5 * resample3(dic, rho_H2O_unsampled, xc, yc, 60)
+rho_oh2o = 0.5 * resample3(dic, rho_H2O_unsampled, xc, yc, 60)
 
 test_ratio = rho_CO_unsampled1/rho_CO_unsampled2
 rho_co = rho_co2
